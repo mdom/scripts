@@ -33,8 +33,8 @@ for my $path (@ordered_files) {
     $new_file =~ s/^\d+-//;
     $new_file = sprintf $format, $index++, $new_file;
     my $new_path = catdir( @dirs, $new_file );
-    if ( $path ne $new_path ) {
-        rename $path, $new_path;
+    if ( $path ne $new_path && !-f $new_path ) {
+        rename $path, $new_path or warn "Can't rename $path to $new_path: $!\n";
     }
 }
 
