@@ -1,0 +1,41 @@
+#!/usr/bin/perl
+
+use strict;
+use warnings;
+use IO::Handle;
+use File::Temp qw(tempfile);
+use File::Spec::Functions qw(catdir splitdir);
+
+my ( $fh, $filename ) = tempfile;
+
+print {$fh} $_, "\n" for @ARGV;
+
+$fh->flush;
+
+my $editor = $ENV{VISUAL} || $ENV{EDITOR} || 'vi';
+
+system( $editor, $filename ) == 0 or die "Can't open $editor: $!\n";
+
+$fh->seek( 0, 0 );
+
+my @ordered_files = <$fh>;
+
+my $width = length scalar @ordered_files;
+
+my $format = "%0${width}d-%s";
+
+my $index = 0;
+
+for my $path (@ordered_files) {
+    chomp $path;
+    my (@dirs) = splitdir($path);
+    my $new_file = pop @dirs;
+    $new_file =~ s/^\d+-//;
+    $new_file = sprintf $format, $index++, $new_file;
+    my $new_path = catdir( @dirs, $new_file );
+    if ( $path ne $new_path ) {
+        rename $path, $new_path;
+    }
+}
+
+exit 0;
