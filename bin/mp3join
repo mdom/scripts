@@ -1,0 +1,25 @@
+#!/bin/sh
+
+if [ $# -lt 2 ];then
+	printf "$0 [--force] OUTPUTFILE INPUT_FILES...\n" >&2
+	exit 1
+fi
+
+forced=0;
+
+case $1 in
+	--force ) shift; forced=1 ;;
+esac
+
+output="$1"
+shift
+
+if [ -f "$output" ] && [ "$forced" -eq 0 ];then
+	printf "%s\n" "Outputfile \"$output\" exists. Use --force to overwrite." >&2
+	exit 1
+fi
+
+
+files="$(printf "%s\n" "$@" | paste -sd "|" -)"
+
+ffmpeg -i "concat:$files" -acodec copy "$output"
