@@ -1,0 +1,31 @@
+#!/bin/sh
+
+if [ $# -lt 1 ];then
+	printf "usage: $0 [--force ] INPUT_FILES...\n" >&2
+	exit 1
+fi
+
+forced=0
+error=0
+
+case $1 in
+	--force ) shift; forced=1 ;;
+esac
+
+for i;do
+	output_file="${i%.*}.WAV"
+	if [ -f "$output_file" ] && [ "$forced" -eq 0 ]; then
+		printf "%s\n" "Output file \"$output_file\" exists. Use --force to overwrite." >&2
+		error=1
+	fi
+done
+
+if [ "$error" -eq 1 ];then
+	exit 1
+fi
+
+for i;do
+	sox --buffer 131072 --multi-threaded --no-glob "$i" --clobber -r 32000 -b 16 -e signed-integer --no-glob "${i%.*}.WAV" remix - gain -n -1.5 bass +1 loudness -1 pad 0 0 dither
+done
+
+exit 0
