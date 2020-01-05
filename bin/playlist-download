@@ -1,3 +1,23 @@
 #!/bin/sh
 
-youtube-dl -o '%(playlist_title)s-%(playlist_index)s-%(title)s.%(ext)s' "$@"
+usage () {
+	printf "usage: %s\n" "$0 [--mp3] [--help] URL" >&2;
+	exit 0
+}
+
+while [ $# -gt 0 ];do
+	case $1 in
+		--mp3  ) shift; mp3=1 ;;
+		--help ) usage ;;
+		* ) break ;;
+	esac
+done
+
+if [ $# -eq 0 ];then
+	usage
+fi
+
+youtube-dl \
+	${mp3:+--extract-audio --audio-format mp3} \
+	 -o '%(playlist_title)s-%(playlist_index)s-%(title)s.%(ext)s' \
+	"$@"
