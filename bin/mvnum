@@ -1,0 +1,23 @@
+#!/bin/sh
+
+usage () {
+	printf "%s\n" "usage: $0 [--dry-run|-n] NUM FILES" >&2
+	exit 0;
+}
+
+case $1 in
+	--dry-run|-n ) shift; dry_run=1 ;;
+	--*|-* ) usage ;;
+esac
+
+num=$1
+shift
+
+for i;do
+	suffix=${i##*.}
+	if [ "$suffix" = "$i" ];then
+		suffix=""
+	fi
+	${dry_run+echo} mv "$i" "$num${suffix:+.}$suffix"
+	num=$(( num + 1 ))
+done
