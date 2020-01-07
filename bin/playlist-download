@@ -21,6 +21,7 @@ fi
 
 youtube-dl \
 	${format:+-f $format} \
+	--ignore-errors \
 	${mp3:+--extract-audio --audio-format mp3} \
 	 -o '%(playlist_title)s-%(playlist_index)s-%(title)s.%(ext)s' \
 	"$@"
