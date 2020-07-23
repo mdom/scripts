@@ -1,0 +1,15 @@
+#!/bin/sh
+# https://gist.github.com/rsvp/1209835
+
+minutes=${1:-'59'}
+repeats=$(( minutes - 1 ))
+center=${2:-'1786'}
+wave=${3:-'0.0333333'}
+noise='brown'
+len='01:00'
+play -q -c 2  --null  synth  $len  ${noise}noise  \
+     band -n $center 499               \
+     tremolo $wave    43   reverb 19   \
+     bass -11              treble -1   \
+     vol     14dB                      \
+     repeat  $repeats
