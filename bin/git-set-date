@@ -1,0 +1,10 @@
+#!/bin/sh
+
+set -e
+
+export GIT_COMMITTER_DATE=$1
+export GIT_AUTHOR_DATE=$1
+
+shift
+
+git "$@"
